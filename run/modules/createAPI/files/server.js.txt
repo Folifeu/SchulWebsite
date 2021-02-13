@@ -1,0 +1,40 @@
+require("dotenv").config();
+const db = require('./db')
+const express = require("express");
+const fs = require("fs");
+const cors = require("cors");
+const bcrypt = require('bcrypt');
+
+const AdminHash = process.env.Admin_hash
+
+const app = express();
+
+app.use(cors({origin: '<% origin %>'}));
+app.use(express.json());
+
+<% requests %>
+
+app.use((req,res) => {
+    res.status(404).send({
+        "status": "failed",
+        "error": "Page not found"
+    });
+});
+
+const port = process.env.PORT || 3005;
+app.listen(port, () => {
+    console.log(`Server is up and listening on port ${port}`);
+});
+
+/*const unflatten = dataset => {
+    //evt. tables müssen in reihenfolge sein
+    //evt. wenn parent_id nicht existiert -> crash
+        const hashTable = Object.create(null);
+        dataset.forEach(aData => hashTable[aData.id] = {...aData, children: []});
+        const dataTree = [];
+        dataset.forEach(aData => {
+          if(aData.parent_id && aData.parent_id != 0) hashTable[aData.parent_id].children.push(hashTable[aData.id])
+          else dataTree.push(hashTable[aData.id])
+        });
+        return dataTree;
+    };*/

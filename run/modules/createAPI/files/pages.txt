@@ -1,1 +1,43 @@
-
+const asyncQuery = require('util').promisify(db.query);
+const updatePagesJson = (async () => {
+    const res = await asyncQuery("SELECT * FROM pages");
+    const unflatten = dataset => {
+        const hashTable = Object.create(null);
+        dataset.forEach(aData => hashTable[aData.id] = {...aData, children: []});
+        const dataTree = [];
+        dataset.forEach(aData => {
+          if(aData.parent_id && aData.parent_id != 0) hashTable[aData.parent_id].children.push(hashTable[aData.id])
+          else dataTree.push(hashTable[aData.id])
+        });
+        return dataTree;
+    };
+    const unflatted = unflatten(res.rows);
+    return unflatted;
+})();
+app.post("/pagesJSON", (req, res) => {
+    bcrypt.compare(req.body.password || '', AdminHash).then((valid) => {
+    if (valid) {
+        const mutValues = ['url','description','parent_id'];
+        var query = "UPDATE pages SET ";
+        var valueArray = [];
+        var varCount = 1;
+        for (var i = 0; i < mutValues.length;i++){
+            if (req.body[mutValues[i]]) {
+                query += `${mutValues[i]}=$${varCount++} `
+                valueArray.push(req.body[mutValues[i]]);
+            }
+        }
+        query += `WHERE id = ${req.body.id};`
+        db.query(query, valueArray).then(async () => {
+            try {
+                res.send({
+                    pages_json: await updatePagesJson()
+                });
+            } catch (err) {
+                res.send({"status":"failed", "error":err, "errorLevel": 1, "where": "return"})
+            }
+        }).catch(err => res.send({"status":"failed", "error":err, "errorLevel": 1, "where": "run"}));
+    } else {
+        res.send({"status":"failed", "error":"No permission", "errorLevel": -1, "where": "permission"})
+    }
+})});
