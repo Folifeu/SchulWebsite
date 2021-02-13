@@ -1,1 +1,92 @@
+{
+    "is_create": false,
+    "API": {
+        "public": [{
+            "method": "post",
+            "url": "/get/whatever",
+            "run": [
+                "SELECT * FROM Table12;"
+            ],
+            "return": [
+                "SELECT * FROM Table12;",
+                "SELECT * FROM Table12;"
+            ]
+        },{
+            "method": "post",
+            "url": "/get/whatever",
+            "run": [
+                ["SELECT param_name1 FROM Table12 WHERE id = param_name2;", "param_name1", "param_name2"]
+            ],
+            "return": [
+                "SELECT * FROM Table12;",
+                "SELECT * FROM Table12;"
+            ]
+        }],
+        "admin": [{
+            "method": "post",
+            "url": "/get/whatever2",
+            "run": [
+                "SELECT * FROM Table12;"
+            ],
+            "return": [
+                "SELECT * FROM Table12;",
+                "SELECT * FROM Table12;"
+            ]
+        }],
+        "admin_ver": "/admin/verification"
+    }, 
+    "tables": [{
+        "name": "table12",
+        "columns": [
+            "_id bigserial unique primary key",
+            "r_name varchar(300)"
+        ]
+    }],
+    "onDatabaseInit": [
+        "INSERT INTO Table12 (r_name) VALUES ('hello');"
+    ],
+    "dotenv": {
+        "Admin_Password": "test123",
+        "Request_Origin": "http://localhost:3000",
 
+        "PORT": "3001",
+        "PGPORT": "5432",
+        "New_database_name": "newdb",
+        "PGHOST": "localhost",
+        "PGPASSWORD": "root345",
+        
+        "PGUSER": "postgres",
+        "PGDATABASE": "postgres"
+    },
+    "server_create_config": {
+        "initDB": true,
+        "startServer": true,
+        "runWithNodemon": true,
+        "runWithoutConsole": false,
+        "goToServerDirectory": true,
+        "installModules": true,
+        "initNodeModules": [
+            "pg",
+            "dotenv",
+            "express",
+            "cors",
+            "nodemon",
+            "bcrypt"
+        ]
+    },"onUpdate": {
+        "updateAPI": true,
+        "updateDB": true,
+        "initDBonUpdate": true
+    },"client_create_config": {
+        "create_client_side": true,
+        "installModules": true,
+        "initNodeModules": [
+            "pg",
+            "dotenv",
+            "express",
+            "cors",
+            "nodemon",
+            "bcrypt"
+        ]
+    }
+}
